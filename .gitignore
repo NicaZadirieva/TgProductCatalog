@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 # frontend next js
 # dependencies
-/node_modules
+.next
+node_modules
 /.pnp
 .pnp.js
 
@@ -239,3 +240,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
