@@ -17,7 +17,7 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     # products/{product_id}/{uuid}.{расширение}. Фото хранится в MinIO
     # TODO: протестировать сценарий база данных недоступна, но в MinIO есть изменения. Должен быть лог об этом
-    photo_link: Mapped[str] = mapped_column(String(255), nullable=False)
+    photo_path: Mapped[str] = mapped_column(String(255), nullable=False)
 
     def __init__(self, name: str, photo_link: str):
         self.name = name
