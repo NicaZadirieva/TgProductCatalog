@@ -9,6 +9,8 @@ class Product(Base):
     Модель продукта в базе данных
     """
 
+    __tablename__ = "products"
+
     # товаров может быть много => BigInteger
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     # ~ 130 символов на продукт русскими буквами
