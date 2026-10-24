@@ -26,11 +26,11 @@ class AuditLogs(Base):
     Для указания названия сервиса (bot/backend/frontend), инициирующего действие
     """
     trace_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
-    request_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("update_telegram_requests.request_id")
-    )
-    update_id: Mapped[int] = mapped_column(
-        ForeignKey("update_telegram_requests.update_id")
+    request_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
+    update_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("update_telegram_requests.update_id", ondelete="SET NULL"),
+        nullable=True,
     )
     level: Mapped[LogLevel] = mapped_column(Enum(LogLevel), nullable=False)
     # например, product_created или product_photo_uploaded

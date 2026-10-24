@@ -19,11 +19,11 @@ class UpdateTelegramRequest(Base):
     """
     id обработки сообщения, первичный ключ, задаваемый телеграммом
     """
-    request_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
+    request_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False, unique=True)
     """
     id для запроса. генерируется кодом через uuid
     """
-    trace_id: Mapped[int] = mapped_column(ForeignKey("audit_logs.trace_id"))
+    trace_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     # (для чистки старых записей этой таблицы)
     received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     """
