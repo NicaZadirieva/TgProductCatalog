@@ -8,6 +8,8 @@ class CommonAppSettings(BaseModel):
     ENVIRONMENT: str = (
         "development"  # TODO: настроить логи для development и production
     )
+    FRONTEND_URL: str
+    TELEGRAM_BOT_URL: str
 
 
 class DatabaseSettings(BaseModel):
@@ -44,6 +46,8 @@ class Settings(BaseSettings):
 
     # Common
     ENVIRONMENT: str = "development"
+    FRONTEND_URL: str
+    TELEGRAM_BOT_URL: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -61,7 +65,11 @@ class Settings(BaseSettings):
 
     @property
     def common_app(self) -> CommonAppSettings:
-        return CommonAppSettings(ENVIRONMENT=self.ENVIRONMENT)
+        return CommonAppSettings(
+            ENVIRONMENT=self.ENVIRONMENT,
+            FRONTEND_URL=self.FRONTEND_URL,
+            TELEGRAM_BOT_URL=self.TELEGRAM_BOT_URL,  # TODO: убрать если не понадобится
+        )
 
     @property
     def db(self) -> DatabaseSettings:
