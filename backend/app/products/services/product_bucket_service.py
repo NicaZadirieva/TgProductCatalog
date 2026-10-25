@@ -1,7 +1,8 @@
 import os
 import uuid
+from typing import Annotated
 
-from fastapi import HTTPException, UploadFile
+from fastapi import Depends, HTTPException, UploadFile
 
 from app.shared.file_bucket_url import FileBucketUrl
 from app.shared.settings import Settings
@@ -32,7 +33,16 @@ class ProductBucketService:
         if not file.filename:
             raise HTTPException(422, "Укажите имя файла")
         object_key = self.__generate_image_key__(file.filename)
-        await self.minio_product_repo.save(object_key, file)
+        return await self.minio_product_repo.save(object_key, file)
 
     def get_image_url_by_key(self, object_key: str) -> FileBucketUrl:
         return self.minio_product_repo.get(object_key)
+
+
+def get_minio_service(minio_product_repo: MinioProductBucketRepoDeps):
+    return ProductBucketService(minio_product_repo)
+
+
+MinioProductBucketServiceDeps = Annotated[
+    ProductBucketService, Depends(get_minio_service)
+]

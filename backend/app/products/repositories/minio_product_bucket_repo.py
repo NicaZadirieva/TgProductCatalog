@@ -34,6 +34,7 @@ class MinioProductBucketRepository:
                 length=-1,
                 content_type=file.content_type,
             )
+            return key
         except S3Error as e:
             logger.error(
                 "Ошибка при сохранении в MinIO", exc_info=e, extra={"key": key}
