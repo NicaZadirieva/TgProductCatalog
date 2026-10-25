@@ -12,6 +12,14 @@ class CommonAppSettings(BaseModel):
     TELEGRAM_BOT_URL: str
 
 
+class MinioSettings(BaseModel):
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+
+    PRODUCT_BUCKET_NAME: str
+    PRODUCT_LINK_EXPIRES_MINUTES: int
+
+
 class DatabaseSettings(BaseModel):
     DATABASE_URL: str = Field(..., min_length=10, description="Database connection URL")
     DATABASE_URL_SYNC: str = Field(
@@ -49,6 +57,13 @@ class Settings(BaseSettings):
     FRONTEND_URL: str
     TELEGRAM_BOT_URL: str
 
+    # MinIo
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+
+    PRODUCT_BUCKET_NAME: str
+    PRODUCT_LINK_EXPIRES_MINUTES: int
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -75,6 +90,15 @@ class Settings(BaseSettings):
     def db(self) -> DatabaseSettings:
         return DatabaseSettings(
             DATABASE_URL=self.DATABASE_URL, DATABASE_URL_SYNC=self.DATABASE_URL_SYNC
+        )
+
+    @property
+    def minio(self) -> MinioSettings:
+        return MinioSettings(
+            MINIO_ACCESS_KEY=self.MINIO_ACCESS_KEY,
+            MINIO_SECRET_KEY=self.MINIO_SECRET_KEY,
+            PRODUCT_BUCKET_NAME=self.PRODUCT_BUCKET_NAME,
+            PRODUCT_LINK_EXPIRES_MINUTES=self.PRODUCT_LINK_EXPIRES_MINUTES,
         )
 
 
