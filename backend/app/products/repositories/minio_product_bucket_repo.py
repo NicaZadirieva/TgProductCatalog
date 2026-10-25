@@ -6,6 +6,7 @@ from typing import Annotated, Any
 from fastapi import Depends
 from minio import Minio, S3Error
 
+from app.products.repositories.minio_client import MinioClientDeps
 from app.shared.file_bucket_url import FileBucketUrl
 from app.shared.settings import Settings
 
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class MinioProductBucketRepository:
-    def __init__(self, minio_client: Minio):
+    def __init__(self, minio_client: MinioClientDeps):
         self.minio_client = minio_client
 
     def create_bucket_if_not_exists(self):
@@ -34,6 +35,7 @@ class MinioProductBucketRepository:
                 data=file.file,
                 length=-1,
                 content_type=file.content_type,
+                part_size=5 * 1024 * 1024,
             )
             return key
         except S3Error as e:
@@ -61,7 +63,7 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Не удалось создать ссылку на файл: {e}")
 
 
-def get_minio_product_repo(minio_client: Minio):
+def get_minio_product_repo(minio_client: MinioClientDeps):
     return MinioProductBucketRepository(minio_client)
 
 

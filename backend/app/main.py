@@ -13,7 +13,7 @@ def create_app():
     logger.debug("Запуск API")
     settings = Settings()  # type: ignore
     new_app = FastAPI(
-        title="TgProductCatalog",
+        title="TgProductCatalog API",
         description="API для работы приложения Каталог товаров",
         version="0.0.1",
         openapi_tags=[

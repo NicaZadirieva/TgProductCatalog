@@ -8,13 +8,16 @@ class CommonAppSettings(BaseModel):
     ENVIRONMENT: str = (
         "development"  # TODO: настроить логи для development и production
     )
-    FRONTEND_URL: str
-    TELEGRAM_BOT_URL: str
+    FRONTEND_URL: str  # TODO:сделать валидацию
+    TELEGRAM_BOT_URL: str  # TODO:сделать валидацию
+    TELEGRAM_ADMIN_IDS: list[int] = []
 
 
 class MinioSettings(BaseModel):
+    MINIO_API_URL: str  # TODO:сделать валидацию
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
+    MINIO_SECURE: bool
 
     PRODUCT_BUCKET_NAME: str
     PRODUCT_LINK_EXPIRES_MINUTES: int
@@ -56,10 +59,13 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     FRONTEND_URL: str
     TELEGRAM_BOT_URL: str
+    TELEGRAM_ADMIN_IDS: list[int] = []
 
     # MinIo
+    MINIO_API_URL: str
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
+    MINIO_SECURE: bool
 
     PRODUCT_BUCKET_NAME: str
     PRODUCT_LINK_EXPIRES_MINUTES: int
@@ -84,6 +90,7 @@ class Settings(BaseSettings):
             ENVIRONMENT=self.ENVIRONMENT,
             FRONTEND_URL=self.FRONTEND_URL,
             TELEGRAM_BOT_URL=self.TELEGRAM_BOT_URL,  # TODO: убрать если не понадобится
+            TELEGRAM_ADMIN_IDS=self.TELEGRAM_ADMIN_IDS,
         )
 
     @property
@@ -99,6 +106,8 @@ class Settings(BaseSettings):
             MINIO_SECRET_KEY=self.MINIO_SECRET_KEY,
             PRODUCT_BUCKET_NAME=self.PRODUCT_BUCKET_NAME,
             PRODUCT_LINK_EXPIRES_MINUTES=self.PRODUCT_LINK_EXPIRES_MINUTES,
+            MINIO_API_URL=self.MINIO_API_URL,
+            MINIO_SECURE=self.MINIO_SECURE,
         )
 
 
