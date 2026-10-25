@@ -9,6 +9,7 @@ from app.products.services.product_storage_service import ProductStorageServiceD
 router = APIRouter(prefix="/v1/product", tags=["Products"])
 
 
+# TODO: добавить только для админов
 @router.post("/create", response_model=CreateProductResponse, status_code=201)
 async def create_product(
     name: Annotated[str, Form(max_length=255, description="Название товара")],
