@@ -1,8 +1,9 @@
-from datetime import timedelta
 import logging
+from datetime import UTC, datetime, timedelta
+from http.client import HTTPException
 from typing import Annotated, Any
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from minio import Minio, S3Error
 
 from app.shared.file_bucket_url import FileBucketUrl
@@ -45,12 +46,14 @@ class MinioProductBucketRepository:
 
     def get(self, key: str) -> FileBucketUrl:
         try:
+            delta = timedelta(minutes=settings.minio.PRODUCT_LINK_EXPIRES_MINUTES)
+            expires_at = datetime.now(UTC) + delta
             url = self.minio_client.presigned_get_object(
                 settings.minio.PRODUCT_BUCKET_NAME,
                 key,
-                expires=timedelta(minutes=settings.minio.PRODUCT_LINK_EXPIRES_MINUTES),
+                expires=delta,
             )
-            return FileBucketUrl(url=url)
+            return FileBucketUrl(url=url, expires_at=expires_at)
         except S3Error as e:
             logger.error(
                 "Не удалось создать ссылку на файл", exc_info=e, extra={"key": key}
