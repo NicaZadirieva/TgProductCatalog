@@ -8,6 +8,16 @@ class CommonAppSettings(BaseModel):
     ENVIRONMENT: str = (
         "development"  # TODO: настроить логи для development и production
     )
+    FRONTEND_URL: str
+    TELEGRAM_BOT_URL: str
+
+
+class MinioSettings(BaseModel):
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+
+    PRODUCT_BUCKET_NAME: str
+    PRODUCT_LINK_EXPIRES_MINUTES: int
 
 
 class DatabaseSettings(BaseModel):
@@ -44,6 +54,15 @@ class Settings(BaseSettings):
 
     # Common
     ENVIRONMENT: str = "development"
+    FRONTEND_URL: str
+    TELEGRAM_BOT_URL: str
+
+    # MinIo
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+
+    PRODUCT_BUCKET_NAME: str
+    PRODUCT_LINK_EXPIRES_MINUTES: int
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -61,12 +80,25 @@ class Settings(BaseSettings):
 
     @property
     def common_app(self) -> CommonAppSettings:
-        return CommonAppSettings(ENVIRONMENT=self.ENVIRONMENT)
+        return CommonAppSettings(
+            ENVIRONMENT=self.ENVIRONMENT,
+            FRONTEND_URL=self.FRONTEND_URL,
+            TELEGRAM_BOT_URL=self.TELEGRAM_BOT_URL,  # TODO: убрать если не понадобится
+        )
 
     @property
     def db(self) -> DatabaseSettings:
         return DatabaseSettings(
             DATABASE_URL=self.DATABASE_URL, DATABASE_URL_SYNC=self.DATABASE_URL_SYNC
+        )
+
+    @property
+    def minio(self) -> MinioSettings:
+        return MinioSettings(
+            MINIO_ACCESS_KEY=self.MINIO_ACCESS_KEY,
+            MINIO_SECRET_KEY=self.MINIO_SECRET_KEY,
+            PRODUCT_BUCKET_NAME=self.PRODUCT_BUCKET_NAME,
+            PRODUCT_LINK_EXPIRES_MINUTES=self.PRODUCT_LINK_EXPIRES_MINUTES,
         )
 
 
