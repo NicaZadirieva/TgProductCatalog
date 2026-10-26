@@ -1,10 +1,13 @@
-from datetime import timedelta
+import asyncio
 import logging
+from datetime import UTC, datetime, timedelta
+from http.client import HTTPException
 from typing import Annotated, Any
 
-from fastapi import Depends, HTTPException
-from minio import Minio, S3Error
+from fastapi import Depends
+from minio import S3Error
 
+from app.products.repositories.minio_client import MinioClientDeps
 from app.shared.file_bucket_url import FileBucketUrl
 from app.shared.settings import Settings
 
@@ -14,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class MinioProductBucketRepository:
-    def __init__(self, minio_client: Minio):
+    def __init__(self, minio_client: MinioClientDeps):
         self.minio_client = minio_client
 
     def create_bucket_if_not_exists(self):
@@ -27,14 +30,16 @@ class MinioProductBucketRepository:
 
     async def save(self, key: str, file: Any):
         try:
-            self.minio_client.put_object(
+            await asyncio.to_thread(
+                self.minio_client.put_object,
                 bucket_name=settings.minio.PRODUCT_BUCKET_NAME,
                 object_name=key,
                 data=file.file,
                 length=-1,
                 content_type=file.content_type,
+                part_size=5 * 1024 * 1024,
             )
-            return key
+
         except S3Error as e:
             logger.error(
                 "Ошибка при сохранении в MinIO", exc_info=e, extra={"key": key}
@@ -42,15 +47,19 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Ошибка при сохранении в MinIO: {e}")
         finally:
             await file.close()
+        object_path = f"{settings.minio.PRODUCT_BUCKET_NAME}/{key}"
+        return object_path
 
     def get(self, key: str) -> FileBucketUrl:
         try:
+            delta = timedelta(minutes=settings.minio.PRODUCT_LINK_EXPIRES_MINUTES)
+            expires_at = datetime.now(UTC) + delta
             url = self.minio_client.presigned_get_object(
                 settings.minio.PRODUCT_BUCKET_NAME,
                 key,
-                expires=timedelta(minutes=settings.minio.PRODUCT_LINK_EXPIRES_MINUTES),
+                expires=delta,
             )
-            return FileBucketUrl(url=url)
+            return FileBucketUrl(url=url, expires_at=expires_at)
         except S3Error as e:
             logger.error(
                 "Не удалось создать ссылку на файл", exc_info=e, extra={"key": key}
@@ -58,7 +67,7 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Не удалось создать ссылку на файл: {e}")
 
 
-def get_minio_product_repo(minio_client: Minio):
+def get_minio_product_repo(minio_client: MinioClientDeps):
     return MinioProductBucketRepository(minio_client)
 
 
