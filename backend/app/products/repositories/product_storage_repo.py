@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy import func, select
 
 from app.products.model import Product
 from app.shared.db import DbSessionDeps
@@ -15,6 +16,19 @@ class ProductStorageRepo:
         await self.db_session.commit()
         await self.db_session.refresh(product)
         return product
+
+    async def get_by_id(self, product_id: int):
+        return await self.db_session.get(Product, product_id)
+
+    async def get_batch(self, start: int, size: int) -> list[Product]:
+        stmt = select(Product).order_by(Product.name.asc()).limit(start).offset(size)
+        res = await self.db_session.execute(stmt)
+        return list(res.scalars())
+
+    async def get_count(self) -> int | None:
+        stmt = select(func.count()).order_by(Product.name.asc())
+        res = await self.db_session.execute(stmt)
+        return res.scalar_one_or_none()
 
 
 def get_product_storage_repo(db_session: DbSessionDeps):
