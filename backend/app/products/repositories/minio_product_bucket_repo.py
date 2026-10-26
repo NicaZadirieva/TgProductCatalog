@@ -1,10 +1,11 @@
+import asyncio
 import logging
 from datetime import UTC, datetime, timedelta
 from http.client import HTTPException
 from typing import Annotated, Any
 
 from fastapi import Depends
-from minio import Minio, S3Error
+from minio import S3Error
 
 from app.products.repositories.minio_client import MinioClientDeps
 from app.shared.file_bucket_url import FileBucketUrl
@@ -29,7 +30,8 @@ class MinioProductBucketRepository:
 
     async def save(self, key: str, file: Any):
         try:
-            self.minio_client.put_object(
+            await asyncio.to_thread(
+                self.minio_client.put_object,
                 bucket_name=settings.minio.PRODUCT_BUCKET_NAME,
                 object_name=key,
                 data=file.file,
@@ -37,7 +39,7 @@ class MinioProductBucketRepository:
                 content_type=file.content_type,
                 part_size=5 * 1024 * 1024,
             )
-            return key
+
         except S3Error as e:
             logger.error(
                 "Ошибка при сохранении в MinIO", exc_info=e, extra={"key": key}
@@ -45,6 +47,8 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Ошибка при сохранении в MinIO: {e}")
         finally:
             await file.close()
+        object_path = f"{settings.minio.PRODUCT_BUCKET_NAME}/{key}"
+        return object_path
 
     def get(self, key: str) -> FileBucketUrl:
         try:

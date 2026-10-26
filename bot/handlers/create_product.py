@@ -63,7 +63,9 @@ async def process_product_data(message: Message, state: FSMContext, bot: Bot):
             file=file_obj,
             file_extension=file_extension,
         )
+
         await state.clear()
+        await message.answer("Товар сохранен успешно")
     except httpx.HTTPError as e:
         await message.answer(
             "Не удалось связаться с API. Повторите позже. \\cancel - отменить"

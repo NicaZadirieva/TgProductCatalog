@@ -16,11 +16,16 @@ async def create_product(
     telegram_id: AdminUserIdDeps,
     name: Annotated[str, Form(max_length=255, description="Название товара")],
     original_photo: Annotated[UploadFile, File(description="Оригинальное изображение")],
+    photo_extension: Annotated[
+        str, Form(max_length=255, description="Расширение файла")
+    ],
     product_bucket_service: MinioProductBucketServiceDeps,
     product_storage_service: ProductStorageServiceDeps,
 ):
     # Сначала сохраняем изображение, чтобы в базе не хранились битые ссылки
-    photo_path = await product_bucket_service.upload_image(telegram_id, original_photo)
+    photo_path = await product_bucket_service.upload_image(
+        telegram_id, original_photo, photo_extension
+    )
     # При успешном сохранении записываем в базу
     dto = CreateProductRequest(name=name, photo_path=photo_path)
     new_product = await product_storage_service.create_product(telegram_id, dto)

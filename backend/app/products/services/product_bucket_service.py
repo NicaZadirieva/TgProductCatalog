@@ -26,20 +26,22 @@ class ProductBucketService:
         self.minio_product_repo = minio_product_repo
         self.admin_service = admin_service
 
-    def __generate_image_key__(self, filename: str):
-        extension = os.path.splitext(filename)[1]
+    def __generate_image_key__(self, filename: str, file_extension: str | None = None):
+        extension = os.path.splitext(filename)[1] or file_extension
         return f"{uuid.uuid4().hex}{extension}"
 
     def __is_image__(self, file: UploadFile):
         return not file.content_type or not file.content_type.startswith("image/")
 
-    async def upload_image(self, telegram_id: int, file: UploadFile):
+    async def upload_image(
+        self, telegram_id: int, file: UploadFile, photo_extension: str
+    ):
         if self.admin_service.is_admin(telegram_id):
             if not self.__is_image__(file):
                 raise HTTPException(415, "Только изображения разрешены")
             if not file.filename:
                 raise HTTPException(422, "Укажите имя файла")
-            object_key = self.__generate_image_key__(file.filename)
+            object_key = self.__generate_image_key__(file.filename, photo_extension)
             return await self.minio_product_repo.save(object_key, file)
         raise ValueError("Not corrected user. Must be admin")
 
