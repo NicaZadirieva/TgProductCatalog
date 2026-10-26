@@ -43,7 +43,7 @@ class ProductBucketService:
                 raise HTTPException(422, "Укажите имя файла")
             object_key = self.__generate_image_key__(file.filename, photo_extension)
             return await self.minio_product_repo.save(object_key, file)
-        raise ValueError("Not corrected user. Must be admin")
+        raise HTTPException(403, "Not corrected user. Must be admin")
 
     def get_image_url_by_key(self, object_key: str) -> FileBucketUrl:
         return self.minio_product_repo.get(object_key)

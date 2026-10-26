@@ -27,9 +27,15 @@ async def create_product(
             if resp.status_code != 201:
                 logger.error(
                     "Ошибка API: ",
-                    extra={"status_code": resp.status_code, "error": resp.text},
+                    extra={
+                        "status_code": resp.status_code,
+                        "error": resp.text,
+                        "telegram_id": telegram_id,
+                    },
                 )
                 raise BackendApiError(message=resp.text, status_code=resp.status_code)
     except httpx.HTTPError as e:
-        logger.error("Не удалось связаться с API", exc_info=e)
+        logger.error(
+            "Не удалось связаться с API", exc_info=e, extra={"telegram_id": telegram_id}
+        )
         raise

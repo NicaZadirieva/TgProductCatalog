@@ -1,4 +1,6 @@
+import logging
 import os
+
 import httpx
 from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
@@ -9,7 +11,6 @@ from filters.is_admin import IsAdmin, IsAdminCallback
 from keyboards.create_product import CREATE_KEYBOARD_TITLE, CREATE_PRODUCT_CB_DATA
 from shared.errors.backend_api_error import BackendApiError
 from states.create_product import CreateProduct
-import logging
 
 logger = logging.getLogger(__name__)
 
