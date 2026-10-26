@@ -1,0 +1,37 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: "%(asctime)s - [%(levelname)s] - %(name)s - %(message)s - telegram_id: %(telegram_id)s - status_code: %(status_code)s - error: %(error)s"
+    defaults:
+      telegram_id: "-"
+      status_code: "-"
+      error: "-"
+  simple:
+    format: "%(asctime)s - %(levelname)s - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    stream: ext://sys.stdout
+    formatter: default
+  file:
+    class: logging.handlers.TimedRotatingFileHandler
+    encoding: utf-8
+    filename: logs/prod/app_prod.log
+    formatter: default
+    when: "midnight"
+    interval: 1
+    backupCount: 7
+
+loggers:
+  app:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: false
+
+
+root:
+  level: INFO
+  handlers: [console]

@@ -42,7 +42,7 @@ class MinioProductBucketRepository:
 
         except S3Error as e:
             logger.error(
-                "Ошибка при сохранении в MinIO", exc_info=e, extra={"key": key}
+                "Ошибка при сохранении в MinIO", exc_info=e, extra={"photo_key": key}
             )
             raise HTTPException(500, f"Ошибка при сохранении в MinIO: {e}")
         finally:
@@ -62,7 +62,9 @@ class MinioProductBucketRepository:
             return FileBucketUrl(url=url, expires_at=expires_at)
         except S3Error as e:
             logger.error(
-                "Не удалось создать ссылку на файл", exc_info=e, extra={"key": key}
+                "Не удалось создать ссылку на файл",
+                exc_info=e,
+                extra={"photo_key": key},
             )
             raise HTTPException(500, f"Не удалось создать ссылку на файл: {e}")
 

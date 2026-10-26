@@ -5,11 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.products.routes import router as product_router
 from app.shared.settings import Settings
+from app.utils.logs_util import LoggerUtils
 
 logger = logging.getLogger(__name__)
 
 
 def create_app():
+    LoggerUtils.setup_logger()
     logger.debug("Запуск API")
     settings = Settings()  # type: ignore
     new_app = FastAPI(

@@ -1,9 +1,12 @@
+from http.client import HTTPException
 from typing import Annotated
 
 from fastapi import Depends
+
 from app.products.model import Product
 from app.products.schema import CreateProductRequest
 from app.products.services.admin_service import AdminServiceDeps
+
 from ..repositories.product_storage_repo import ProductStorageRepoDeps
 
 
@@ -20,7 +23,7 @@ class ProductStorageService:
         if self.admin_service.is_admin(telegram_id):
             product = Product(name=dto.name, photo_path=dto.photo_path)
             return await self.product_storage_repo.save(product)
-        raise ValueError("Not corrected user. Must be admin")
+        raise HTTPException(403, "Not corrected user. Must be admin")
 
 
 def get_product_storage_service(
