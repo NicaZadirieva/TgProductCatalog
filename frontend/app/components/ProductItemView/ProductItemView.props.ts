@@ -1,6 +1,7 @@
 import { HtmlHTMLAttributes } from 'react';
 
-export default interface ProductViewProps extends HtmlHTMLAttributes<HTMLDivElement> {
+export default interface ProductItemViewProps extends HtmlHTMLAttributes<HTMLDivElement> {
+	productId: number;
 	/**
 	 * Название товара
 	 */
@@ -8,5 +9,5 @@ export default interface ProductViewProps extends HtmlHTMLAttributes<HTMLDivElem
 	/**
 	 * Ссылка на фото из MinIO
 	 */
-	photo_link: string;
+	photoLink: string;
 }
