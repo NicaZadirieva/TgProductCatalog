@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from app.products.model import Product
 from app.products.schema import CreateProductRequest, GetProductsRequest
-from app.products.services.admin_service import AdminServiceDeps
+from app.admin.admin_service import AdminServiceDeps
 
 from ..repositories.product_storage_repo import ProductStorageRepoDeps
 

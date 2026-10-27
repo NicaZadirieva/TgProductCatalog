@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, UploadFile
 
-from app.products.services.admin_service import AdminServiceDeps
+from app.admin.admin_service import AdminServiceDeps
 from app.shared.file_bucket_url import FileBucketUrl
 from app.shared.settings import Settings
 

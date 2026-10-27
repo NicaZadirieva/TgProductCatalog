@@ -16,6 +16,7 @@ def create_admin_menu_keyboard():
             [create_product_menu_kb_btn, open_miniapp_menu_kb_btn],
         ],
         resize_keyboard=True,
+        is_persistent=False,
     )
 
 
@@ -29,4 +30,5 @@ def create_user_menu_keyboard():
             [open_miniapp_menu_kb_btn],
         ],
         resize_keyboard=True,
+        is_persistent=False,
     )
