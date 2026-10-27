@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "./index.module.css";
 import { useCallback, useEffect, useState } from "react";
 import ProductsViewProps from "./ProductsView.props";

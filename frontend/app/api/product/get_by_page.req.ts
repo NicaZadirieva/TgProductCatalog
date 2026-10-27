@@ -4,7 +4,7 @@ import RequestError from '../shared/RequestError';
 import { GetByPageRequest, GetByPageResponse, toProductOut } from './get_by_page.schema';
 
 export default async function getProductsByPage(dto: GetByPageRequest) : Promise<GetByPageResponse> {
-	const res = await fetch(`${API_URL}/product?current_page=${dto.currentPage}&page_size=${dto.pageSize}`, {
+	const res = await fetch(`${API_URL}/product?current_page=${dto.currentPage + 1}&page_size=${dto.pageSize}`, {
         method: "GET",
         cache: "no-store",
 		

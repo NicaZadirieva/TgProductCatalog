@@ -6,7 +6,7 @@ import Image from 'next/image';
 export default function ProductItemView({className, name, photoLink}: ProductItemViewProps) {
 	return (
 		<div className={cn(className, styles["product-view"])}>
-			<Image className={styles.image} src={photoLink} alt="Фото товара"/>
+			<img width={100} height={100} className={styles.image} src={photoLink} alt="Фото товара"/>
 			<span className={styles.name}>{name}</span>
 		</div>
 	)

@@ -21,12 +21,17 @@ class ProductStorageRepo:
         return await self.db_session.get(Product, product_id)
 
     async def get_batch(self, start: int, size: int) -> list[Product]:
-        stmt = select(Product).order_by(Product.name.asc()).limit(start).offset(size)
+        stmt = (
+            select(Product)
+            .order_by(Product.name.asc(), Product.id.asc())
+            .limit(size)
+            .offset(start)
+        )
         res = await self.db_session.execute(stmt)
         return list(res.scalars())
 
     async def get_count(self) -> int | None:
-        stmt = select(func.count()).order_by(Product.name.asc())
+        stmt = select(func.count()).select_from(Product)
         res = await self.db_session.execute(stmt)
         return res.scalar_one_or_none()
 

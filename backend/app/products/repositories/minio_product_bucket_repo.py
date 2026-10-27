@@ -47,7 +47,7 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Ошибка при сохранении в MinIO: {e}")
         finally:
             await file.close()
-        object_path = f"{settings.minio.PRODUCT_BUCKET_NAME}/{key}"
+        object_path = f"{key}"
         return object_path
 
     async def get(self, key: str) -> FileBucketUrl:

@@ -5,4 +5,7 @@ export default class RequestError extends Error {
         super(message);
         this.statusCode = statusCode;
     }
+    toString(): string {
+        return `RequestError [${this.statusCode}]: ${this.message}`
+    }
 }
