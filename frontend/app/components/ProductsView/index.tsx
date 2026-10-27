@@ -1,52 +1,46 @@
 import styles from "./index.module.css";
 import { useCallback, useEffect, useState } from "react";
-import ProductsViewProps from './ProductsView.props';
-import ProductList from '../ProductList';
-import getProductsByPage from '@/app/api/product/get_by_page.req';
-import getProductPhoto from '@/app/api/image/get_by_product.req';
+import ProductsViewProps from "./ProductsView.props";
+import ProductList from "../ProductList";
+import updateProductItems from "@/app/api/utils/updateProductItems";
+import { PAGE_SIZES } from '@/app/types/pageSizeValues';
+import { usePaginationFilters } from '@/app/hooks/usePaginationFilters';
+import { buildPageSize } from '@/app/shared/parsePaginationParams';
 
-const PAGE_SIZES = [10, 25, 50, 100];
 
-export default function ProductsView({defaultCount, defaultItems}: ProductsViewProps) {
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+
+export default function ProductsView({
+  defaultCount,
+  defaultItems
+}: ProductsViewProps) {
+  const {filters, setFilters} = usePaginationFilters();
   const [count, setCount] = useState(defaultCount);
-  const totalPages = Math.max(1, Math.ceil(count / pageSize));
+  const totalPages = Math.max(1, Math.ceil(count / filters.pageSize));
   const [items, updateItems] = useState(defaultItems);
 
   const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setPage(0);
+    setFilters({...buildPageSize(size), currentPage: 0});
   };
-  const onUpdate = useCallback(async (page: number, pageSize: number) => {
-	const products_dto = await getProductsByPage({currentPage: page, pageSize});
-	const promises = products_dto.items.map((product) => getProductPhoto(
-		{productId: product.id}
-	));
-	const photos = await Promise.all(promises);
-	const product_with_photos = products_dto.items.map((product) => { 
-		const photo_dto = photos.find((photo) => photo.productId == product.id);
-		return {
-		...product,
-		// фото уже найдены. Использую Promise.all
-		photoLink: photo_dto!.photoLink,
-		expiresAt: photo_dto!.expiresAt,	
-	}});
-	return { items: product_with_photos, count: products_dto.count};
-  }, []);
+  const onUpdate = useCallback(
+    async (page: number, pageSize: number) =>
+      updateProductItems(page, pageSize),
+    [],
+  );
 
   useEffect(() => {
-	onUpdate(page, pageSize).then((data) => {
-		setCount(data.count);
-		updateItems(data.items);
-	}).catch((e) => console.error(e))
-  }, [page, pageSize, onUpdate]);
+    onUpdate(filters.currentPage, filters.pageSize)
+      .then((data) => {
+        setCount(data.count);
+        updateItems(data.items);
+      })
+      .catch((e) => console.error(e));
+  }, [filters, onUpdate]);
 
   return (
     <div className={styles["products-view"]}>
       <form>
         <select
-          value={pageSize}
+          value={filters.pageSize}
           onChange={(e) => handlePageSizeChange(Number(e.target.value))}
         >
           {PAGE_SIZES.map((s) => (
@@ -55,19 +49,31 @@ export default function ProductsView({defaultCount, defaultItems}: ProductsViewP
             </option>
           ))}
         </select>
-		<button type="button" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+        <button
+          type="button"
+          disabled={filters.currentPage === 0}
+          onClick={() => setFilters({
+            currentPage: filters.currentPage - 1,
+            pageSize: filters.pageSize
+          })}
+        >
           Назад
         </button>
-		<span>Стр. {page + 1} из {totalPages}</span>
-		<button
+        <span>
+          Стр. {filters.currentPage + 1} из {totalPages}
+        </span>
+        <button
           type="button"
-          disabled={page >= totalPages - 1}
-          onClick={() => setPage(p => p + 1)}
+          disabled={filters.currentPage >= totalPages - 1}
+          onClick={() => setFilters({
+            currentPage: filters.currentPage + 1,
+            pageSize: filters.pageSize
+          })}
         >
           Вперёд
         </button>
       </form>
-	  <ProductList items={items}/>
+      <ProductList items={items} />
     </div>
   );
 }

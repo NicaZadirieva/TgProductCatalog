@@ -1,6 +1,6 @@
-import ProductItem from '@/app/entities/ProductItem';
+import ProductItem from "@/app/entities/ProductItem";
 
 export default interface ProductsViewProps {
-	defaultItems: ProductItem[];
-	defaultCount: number;
+  defaultItems: ProductItem[];
+  defaultCount: number;
 }
