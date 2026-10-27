@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException
 
-from app.products.services.admin_service import AdminServiceDeps
+from app.admin.admin_service import AdminServiceDeps
 
 
 def get_current_user_id(

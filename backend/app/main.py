@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.products.routes import router as product_router
+from app.admin.routes import router as admin_router
 from app.shared.settings import Settings
 from app.utils.logs_util import LoggerUtils
 
@@ -20,6 +21,7 @@ def create_app():
         version="0.0.1",
         openapi_tags=[
             {"name": "Products", "description": "Управление товарами"},
+            {"name": "Admin", "description": "Управление админами"},
         ],
     )
     origins = [settings.common_app.FRONTEND_URL, settings.common_app.TELEGRAM_BOT_URL]
@@ -32,6 +34,7 @@ def create_app():
     new_app.state.settings = settings
 
     new_app.include_router(product_router)
+    new_app.include_router(admin_router)
     return new_app
 
 
