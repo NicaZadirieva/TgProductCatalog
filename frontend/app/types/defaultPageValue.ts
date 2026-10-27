@@ -1,0 +1,1 @@
+export const DEFAULT_CURRENT_PAGE = 0 as const;

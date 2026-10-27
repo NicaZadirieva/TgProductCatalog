@@ -47,14 +47,15 @@ class MinioProductBucketRepository:
             raise HTTPException(500, f"Ошибка при сохранении в MinIO: {e}")
         finally:
             await file.close()
-        object_path = f"{settings.minio.PRODUCT_BUCKET_NAME}/{key}"
+        object_path = f"{key}"
         return object_path
 
-    def get(self, key: str) -> FileBucketUrl:
+    async def get(self, key: str) -> FileBucketUrl:
         try:
             delta = timedelta(minutes=settings.minio.PRODUCT_LINK_EXPIRES_MINUTES)
             expires_at = datetime.now(UTC) + delta
-            url = self.minio_client.presigned_get_object(
+            url = await asyncio.to_thread(
+                self.minio_client.presigned_get_object,
                 settings.minio.PRODUCT_BUCKET_NAME,
                 key,
                 expires=delta,

@@ -10,12 +10,9 @@ from app.shared.settings import Settings
 
 settings = Settings()  # type: ignore[call-arg]
 
-engine = create_async_engine(settings.db.DATABASE_URL, echo=False)
+engine = create_async_engine(settings.db.DATABASE_URL, echo=True)
 
-async_session_local = async_sessionmaker(
-    engine,
-    expire_on_commit=False,
-)
+async_session_local = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_session() -> AsyncGenerator[AsyncSession]:

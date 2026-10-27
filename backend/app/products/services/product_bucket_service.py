@@ -45,8 +45,8 @@ class ProductBucketService:
             return await self.minio_product_repo.save(object_key, file)
         raise HTTPException(403, "Not corrected user. Must be admin")
 
-    def get_image_url_by_key(self, object_key: str) -> FileBucketUrl:
-        return self.minio_product_repo.get(object_key)
+    async def get_image_url_by_key(self, object_key: str) -> FileBucketUrl:
+        return await self.minio_product_repo.get(object_key)
 
 
 def get_minio_service(
