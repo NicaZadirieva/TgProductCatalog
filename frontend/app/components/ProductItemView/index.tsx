@@ -1,7 +1,6 @@
 import cn from 'classnames';
 import styles from "./index.module.css";
 import ProductItemViewProps from './ProductItemView.props';
-import Image from 'next/image';
 
 export default function ProductItemView({className, name, photoLink}: ProductItemViewProps) {
 	return (
