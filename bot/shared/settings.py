@@ -9,6 +9,7 @@ class CommonAppSettings(BaseModel):
         "development"  # TODO: настроить логи для development и production
     )
     BACKEND_URL: str
+    MINI_APP_URL: str
 
 
 class TgAppSettings(BaseModel):
@@ -18,7 +19,7 @@ class TgAppSettings(BaseModel):
 class Settings(BaseSettings):
     # Common
     ENVIRONMENT: str = "development"
-
+    MINI_APP_URL: str
     # Telegram
     TELEGRAM_BOT_TOKEN: str
 
@@ -52,7 +53,9 @@ class Settings(BaseSettings):
     @property
     def common_app(self) -> CommonAppSettings:
         return CommonAppSettings(
-            ENVIRONMENT=self.ENVIRONMENT, BACKEND_URL=self.BACKEND_URL
+            ENVIRONMENT=self.ENVIRONMENT,
+            BACKEND_URL=self.BACKEND_URL,
+            MINI_APP_URL=self.MINI_APP_URL,
         )
 
     @property
