@@ -1,10 +1,9 @@
 import logging
-from typing import BinaryIO
 
 import httpx
 
-from shared.errors.backend_api_error import BackendApiError
-from shared.settings import Settings
+from app.shared.errors.backend_api_error import BackendApiError
+from app.shared.settings import Settings
 
 logger = logging.getLogger(__name__)
 settings = Settings()  # type: ignore

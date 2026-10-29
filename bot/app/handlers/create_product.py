@@ -6,11 +6,11 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from api.create_product import create_product
-from filters.is_admin import IsAdmin, IsAdminCallback
-from keyboards.create_product import CREATE_KEYBOARD_TITLE, CREATE_PRODUCT_CB_DATA
-from shared.errors.backend_api_error import BackendApiError
-from states.create_product import CreateProduct
+from app.api.create_product import create_product
+from app.filters.is_admin import IsAdmin, IsAdminCallback
+from app.keyboards.create_product import CREATE_KEYBOARD_TITLE, CREATE_PRODUCT_CB_DATA
+from app.shared.errors.backend_api_error import BackendApiError
+from app.states.create_product import CreateProduct
 
 logger = logging.getLogger(__name__)
 

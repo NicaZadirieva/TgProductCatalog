@@ -16,6 +16,12 @@ class TgAppSettings(BaseModel):
     TELEGRAM_BOT_TOKEN: str
 
 
+class WebhookSettings(BaseModel):
+    WEBHOOK_HOST: str
+    WEBAPP_HOST: str
+    WEBAPP_PORT: int
+
+
 class Settings(BaseSettings):
     # Common
     ENVIRONMENT: str = "development"
@@ -25,6 +31,11 @@ class Settings(BaseSettings):
 
     # Backend (api)
     BACKEND_URL: str
+
+    # Webhook
+    WEBHOOK_HOST: str
+    WEBAPP_HOST: str
+    WEBAPP_PORT: int
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -38,6 +49,14 @@ class Settings(BaseSettings):
         allowed = {"development", "production"}
         if v not in allowed:
             raise ValueError(f"ENVIRONMENT must be one of {allowed}")
+        return v
+
+    @field_validator("WEBAPP_PORT")
+    @classmethod
+    def validate_webapp_port(cls, v: int) -> int:
+        allowed = {443, 80, 8080, 88, 8443}
+        if v not in allowed:
+            raise ValueError(f"WEBAPP_PORT must be one of {allowed}")
         return v
 
     @field_validator("BACKEND_URL")
@@ -73,6 +92,14 @@ class Settings(BaseSettings):
     @property
     def tg_app(self) -> TgAppSettings:
         return TgAppSettings(TELEGRAM_BOT_TOKEN=self.TELEGRAM_BOT_TOKEN)
+
+    @property
+    def webhook(self) -> WebhookSettings:
+        return WebhookSettings(
+            WEBAPP_HOST=self.WEBAPP_HOST,
+            WEBHOOK_HOST=self.WEBHOOK_HOST,
+            WEBAPP_PORT=self.WEBAPP_PORT,
+        )
 
 
 settings = Settings()  # type:ignore[call-arg]

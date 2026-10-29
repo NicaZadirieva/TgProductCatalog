@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from filters.is_admin import IsAdmin
-from keyboards import (
+from app.filters.is_admin import IsAdmin
+from app.keyboards import (
     create_admin_menu_keyboard,
     create_user_menu_keyboard,
 )

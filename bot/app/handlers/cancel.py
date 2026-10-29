@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from states.create_product import CreateProduct
+from app.states.create_product import CreateProduct
 
 cancel_router = Router()
 

@@ -1,0 +1,41 @@
+services:
+  bot:
+    build: .
+    container_name: aiogram_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - bot_network
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80" 
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot:ro
+    networks:
+      - bot_network
+    depends_on:
+      - bot
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Команда для автоматического обновления сертификатов каждые 12 часов
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - bot_network
+
+networks:
+  bot_network:
+    driver: bridge

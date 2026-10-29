@@ -1,7 +1,6 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
-
-from api.is_admin import is_admin
+from app.api.is_admin import is_admin
 
 
 class IsAdmin(BaseFilter):

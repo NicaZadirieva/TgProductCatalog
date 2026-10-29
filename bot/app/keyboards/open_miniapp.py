@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, KeyboardButton, WebAppInfo
 
-from shared.settings import Settings
+from app.shared.settings import Settings
 
 settings = Settings()  # type: ignore
 KEYBOARD_TITLE = "Открыть каталог"
