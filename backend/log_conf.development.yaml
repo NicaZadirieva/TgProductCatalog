@@ -30,7 +30,6 @@ loggers:
     handlers: [console, file]
     propagate: false
 
-
 root:
-  level: INFO
-  handlers: [console]
+  level: DEBUG
+  handlers: [console, file]
