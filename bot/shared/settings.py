@@ -50,6 +50,18 @@ class Settings(BaseSettings):
             raise ValueError("BACKEND_URL port must be 1...65535")
         return v
 
+    @field_validator("MINI_APP_URL")
+    @classmethod
+    def validate_miniapp_url(cls, v: str) -> str:
+        parsed = urlparse(v)
+        if not parsed.hostname:
+            raise ValueError("MINI_APP_URL must have hostname")
+        if parsed.scheme != "https":
+            raise ValueError("MINI_APP_URL must be secured")
+        if parsed.port is not None and not (1 <= parsed.port <= 65535):
+            raise ValueError("MINI_APP_URL port must be 1...65535")
+        return v
+
     @property
     def common_app(self) -> CommonAppSettings:
         return CommonAppSettings(
