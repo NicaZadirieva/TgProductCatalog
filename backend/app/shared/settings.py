@@ -5,22 +5,47 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class CommonAppSettings(BaseModel):
-    ENVIRONMENT: str = (
-        "development"  # TODO: настроить логи для development и production
-    )
-    FRONTEND_URL: str  # TODO:сделать валидацию
-    TELEGRAM_BOT_URL: str  # TODO:сделать валидацию
+    ENVIRONMENT: str = "development"
+    FRONTEND_URL: str
     TELEGRAM_ADMIN_IDS: list[int] = []
+
+    @field_validator("ENVIRONMENT")
+    @classmethod
+    def validate_environment(cls, v: str) -> str:
+        allowed = {"development", "production"}
+        if v not in allowed:
+            raise ValueError(f"ENVIRONMENT must be one of {allowed}")
+        return v
+
+    @field_validator("FRONTEND_URL")
+    @classmethod
+    def validate_frontend_url(cls, v: str) -> str:
+        parsed = urlparse(v)
+        if not parsed.hostname:
+            raise ValueError("FRONTEND_URL must have hostname")
+        if parsed.port is not None and not (1 <= parsed.port <= 65535):
+            raise ValueError("FRONTEND_URL port must be 1...65535")
+        return v
 
 
 class MinioSettings(BaseModel):
-    MINIO_API_URL: str  # TODO:сделать валидацию
+    MINIO_API_URL: str
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
     MINIO_SECURE: bool
 
     PRODUCT_BUCKET_NAME: str
     PRODUCT_LINK_EXPIRES_MINUTES: int
+
+    @field_validator("MINIO_API_URL")
+    @classmethod
+    def validate_minio_api_url(cls, v: str) -> str:
+        parsed = urlparse(v)
+        if not parsed.hostname:
+            raise ValueError("MINIO_API_URL must have hostname")
+        if parsed.port is not None and not (1 <= parsed.port <= 65535):
+            raise ValueError("MINIO_API_URL port must be 1...65535")
+        return v
 
 
 class DatabaseSettings(BaseModel):
@@ -58,7 +83,6 @@ class Settings(BaseSettings):
     # Common
     ENVIRONMENT: str = "development"
     FRONTEND_URL: str
-    TELEGRAM_BOT_URL: str
     TELEGRAM_ADMIN_IDS: list[int] = []
 
     # MinIo
@@ -76,20 +100,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    @field_validator("ENVIRONMENT")
-    @classmethod
-    def validate_environment(cls, v: str) -> str:
-        allowed = {"development", "production"}
-        if v not in allowed:
-            raise ValueError(f"ENVIRONMENT must be one of {allowed}")
-        return v
-
     @property
     def common_app(self) -> CommonAppSettings:
         return CommonAppSettings(
             ENVIRONMENT=self.ENVIRONMENT,
             FRONTEND_URL=self.FRONTEND_URL,
-            TELEGRAM_BOT_URL=self.TELEGRAM_BOT_URL,  # TODO: убрать если не понадобится
             TELEGRAM_ADMIN_IDS=self.TELEGRAM_ADMIN_IDS,
         )
 

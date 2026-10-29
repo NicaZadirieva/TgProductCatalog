@@ -24,7 +24,7 @@ def create_app():
             {"name": "Admin", "description": "Управление админами"},
         ],
     )
-    origins = [settings.common_app.FRONTEND_URL, settings.common_app.TELEGRAM_BOT_URL]
+    origins = [settings.common_app.FRONTEND_URL]
     new_app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,

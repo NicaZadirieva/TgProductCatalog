@@ -5,9 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class CommonAppSettings(BaseModel):
-    ENVIRONMENT: str = (
-        "development"  # TODO: настроить логи для development и production
-    )
+    ENVIRONMENT: str = "development"
     BACKEND_URL: str
     MINI_APP_URL: str
 
@@ -38,6 +36,18 @@ class Settings(BaseSettings):
         allowed = {"development", "production"}
         if v not in allowed:
             raise ValueError(f"ENVIRONMENT must be one of {allowed}")
+        return v
+
+    @field_validator("MINI_APP_URL")
+    @classmethod
+    def validate_miniapp_url(cls, v: str) -> str:
+        parsed = urlparse(v)
+        if not parsed.hostname:
+            raise ValueError("MINI_APP_URL must have hostname")
+        if parsed.scheme != "https":
+            raise ValueError("MINI_APP_URL must be secured")
+        if parsed.port is not None and not (1 <= parsed.port <= 65535):
+            raise ValueError("MINI_APP_URL port must be 1...65535")
         return v
 
     @field_validator("BACKEND_URL")

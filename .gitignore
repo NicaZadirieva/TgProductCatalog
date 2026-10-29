@@ -244,3 +244,5 @@ __marimo__/
 minio
 tmp
 logs
+.env.dev
+.env.prod
